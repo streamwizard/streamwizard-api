@@ -2,7 +2,9 @@ import { Hono } from "hono";
 import { securityMiddleware } from "./middleware/security";
 import { rawBodyMiddleware } from "./middleware/raw-body";
 import { twitchEventSubVerification } from "./middleware/twitch-eventsub";
+import { supabaseMiddleware, supabaseAuth } from "./middleware/auth";
 import { handleTwitchEventSub } from "./routes/twitch-eventsub";
+import { syncClipsHandler, syncStatusHandler } from "./routes/clips-sync";
 
 const app = new Hono();
 
@@ -46,7 +48,18 @@ app.post(
   handleTwitchEventSub
 );
 
+// ============================================
+// API ROUTES (User-facing)
+// ============================================
 
+// Apply Supabase middleware to all API routes
+app.use("/api/*", supabaseMiddleware());
+
+// Clips Sync - Trigger a sync for authenticated user
+app.post("/api/clips/sync", supabaseAuth(), syncClipsHandler);
+
+// Clips Sync Status - Get sync status for authenticated user
+app.get("/api/clips/sync-status", supabaseAuth(), syncStatusHandler);
 
 Bun.serve({
   fetch: app.fetch,

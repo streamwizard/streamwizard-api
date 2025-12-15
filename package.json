@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@hono/zod-validator": "^0.7.2",
+    "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.57.4",
     "@types/bcryptjs": "^2.4.6",
     "bcryptjs": "^2.4.3",
