@@ -18,6 +18,7 @@
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.57.4",
     "@types/bcryptjs": "^2.4.6",
+    "axios": "^1.13.2",
     "bcryptjs": "^2.4.3",
     "hono": "^4.9.7",
     "zod": "^4.1.8"
