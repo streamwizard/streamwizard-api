@@ -41,7 +41,7 @@ export async function syncTwitch(
     const diffTime = Math.abs(now.getTime() - lastSyncDate.getTime());
     const diffHours = diffTime / (1000 * 60 * 60);
 
-    if (diffHours < 1 && lastSync.sync_status === "completed" && env.NODE_ENV === "production") {
+    if (diffHours < 1 && lastSync.sync_status === "completed") {
       console.log("last sync was less than an hour ago, skipping sync");
       return null;
     }

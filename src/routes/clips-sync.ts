@@ -86,7 +86,7 @@ export async function syncClipsHandler(c: Context) {
           skipped: true,
           message: "Sync skipped. Last sync was less than an hour ago.",
         },
-        200
+        429 // Too Many Requests
       );
     }
 
