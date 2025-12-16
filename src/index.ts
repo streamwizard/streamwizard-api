@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 import { securityMiddleware } from "./middleware/security";
 import { rawBodyMiddleware } from "./middleware/raw-body";
 import { twitchEventSubVerification } from "./middleware/twitch-eventsub";
@@ -51,6 +52,17 @@ app.post(
 // ============================================
 // API ROUTES (User-facing)
 // ============================================
+
+// Enable CORS for API routes
+app.use(
+  "/api/*",
+  cors({
+    origin: ["http://localhost:3000", "https://streamwizard.org"], // Add your frontend URLs
+    credentials: true,
+    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 // Apply Supabase middleware to all API routes
 app.use("/api/*", supabaseMiddleware());

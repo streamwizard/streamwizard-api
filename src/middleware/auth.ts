@@ -28,8 +28,12 @@ export const getSupabase = (c: Context) => {
 /**
  * Supabase SSR Middleware
  * 
- * Creates a Supabase client with proper cookie handling for SSR.
+ * Creates a Supabase client with proper cookie and Authorization header handling.
  * This middleware should be applied before routes that need Supabase.
+ * 
+ * Handles authentication from:
+ * - Authorization: Bearer <token> headers
+ * - Cookies (for SSR)
  * 
  * Usage:
  * ```typescript
@@ -49,6 +53,7 @@ export const supabaseMiddleware = (): MiddlewareHandler => {
       throw new Error("SUPABASE_ANON_KEY missing!");
     }
 
+    // Create SSR client with cookie handling
     const supabase = createServerClient<Database>(supabaseUrl, supabaseAnonKey, {
       cookies: {
         getAll() {
@@ -56,6 +61,12 @@ export const supabaseMiddleware = (): MiddlewareHandler => {
         },
         setAll(cookiesToSet: Array<{ name: string; value: string; options?: any }>) {
           cookiesToSet.forEach(({ name, value, options }) => setCookie(c, name, value, options));
+        },
+      },
+      // Important: Configure auth to work with Authorization headers
+      global: {
+        headers: {
+          Authorization: c.req.header("Authorization") ?? "",
         },
       },
     });
@@ -71,6 +82,8 @@ export const supabaseMiddleware = (): MiddlewareHandler => {
  * 
  * Verifies that the user is authenticated and sets the user in context.
  * Must be used after supabaseMiddleware().
+ * 
+ * Works with both Authorization headers and cookies.
  * 
  * Usage:
  * ```typescript
@@ -95,13 +108,26 @@ export const supabaseAuth = (): MiddlewareHandler => {
     }
 
     try {
-      // Get the user from the session
+      // Get user - SSR client will automatically use Authorization header or cookies
       const {
         data: { user },
         error,
       } = await supabase.auth.getUser();
 
-      if (error || !user) {
+      if (error) {
+        console.error("Auth error:", error.message, error.status);
+        return c.json(
+          {
+            error: "Unauthorized",
+            message: "Please sign in to access this resource",
+            details: error.message,
+          },
+          401
+        );
+      }
+
+      if (!user) {
+        console.error("No user found in session");
         return c.json(
           {
             error: "Unauthorized",
