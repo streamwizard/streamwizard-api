@@ -3,6 +3,7 @@ import type { EventSubNotification, subscription_type } from "../types/twitch";
 import { z } from "zod";
 import { registerTwitchHandlers } from "./twitch";
 import { TwitchApi } from "@/services/twitchApi";
+import { supabase } from "@/lib/supabase";
 
 export class HandlerRegistry {
   private twitchHandlers = new Map<string, (data: unknown, twitchApi: TwitchApi) => Promise<void>>();
@@ -39,6 +40,18 @@ export class HandlerRegistry {
       throw new Error("No broadcaster id found in event");
     }
 
+    // check if the broadcaster is known to the database
+    const { data: broadcaster, error: broadcasterError } = await supabase
+      .from("integrations_twitch")
+      .select("user_id")
+      .eq("twitch_user_id", broadcasterId)
+      .single();
+
+    if (broadcasterError || !broadcaster) {
+      console.log("Broadcaster not found in database");
+      return;
+    }
+  
     const twitchApi = new TwitchApi(broadcasterId);
 
     const handler = this.twitchHandlers.get(eventType);

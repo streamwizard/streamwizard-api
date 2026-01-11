@@ -4,6 +4,14 @@ import type { StreamOfflineEvent } from "@/types/twitch-eventsub";
 import { syncTwitch } from "@/function/sync-twitch";
 
 export const handleStreamOffline = async (event: StreamOfflineEvent, TwitchAPI: TwitchApi) => {
+  // update the database with the stream offline event
+  const { error } = await supabase
+    .from("broadcaster_live_status")
+    .upsert({ broadcaster_id: event.broadcaster_user_id, is_live: false, broadcaster_name: event.broadcaster_user_name })
+    .single();
+
+  if (error) throw error;
+  
   const { data: user, error: userError } = await supabase
     .from("integrations_twitch")
     .select("user_id")

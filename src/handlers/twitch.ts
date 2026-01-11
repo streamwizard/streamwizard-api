@@ -1,6 +1,7 @@
 import { handleStreamOffline } from "@/function/events/stream-offline";
 import * as TwitchSchema from "../schema/twitch-schema";
 import type { HandlerRegistry } from "./eventHandler";
+import { handleStreamOnline } from "@/function/events/stream-online";
 
 export const registerTwitchHandlers = (handlers: HandlerRegistry) => {
   // chat message
@@ -13,5 +14,7 @@ export const registerTwitchHandlers = (handlers: HandlerRegistry) => {
   );
 
   // stream online
-  handlers.registerTwitchHandler("stream.online", async (event, twitchApi) => {}, TwitchSchema.StreamOnlineSchema);
+  handlers.registerTwitchHandler("stream.online", async (event, twitchApi) => {
+    handleStreamOnline(event, twitchApi);
+  }, TwitchSchema.StreamOnlineSchema);
 };

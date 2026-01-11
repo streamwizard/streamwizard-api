@@ -12,6 +12,7 @@ export async function getChannelAccessToken(channelId: string): Promise<string> 
   const { data, error } = await supabase.from("integrations_twitch").select("access_token").eq("twitch_user_id", channelId).single();
 
   if (error || !data.access_token) {
+    console.log("Error getting channel access token", { error });
     if (error) {
       throw error;
     }

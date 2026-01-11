@@ -4,6 +4,7 @@ import { TwitchFollowersClient } from "./twitch/followers";
 import { TwitchSubscriptionsClient } from "./twitch/subscriptions";
 import { TwitchMarkersClient } from "./twitch/markers";
 import { TwitchClipsClient } from "./twitch/clips";
+import { TwitchStreamsClient } from "./twitch/streams";
 
 export class TwitchApi {
   public chat: TwitchChatClient;	
@@ -12,7 +13,7 @@ export class TwitchApi {
   public subscriptions: TwitchSubscriptionsClient;
   public markers: TwitchMarkersClient;
   public clips: TwitchClipsClient;
-
+  public streams: TwitchStreamsClient;
   
   constructor(broadcaster_id: string | null = null) {
     this.chat = new TwitchChatClient(broadcaster_id);
@@ -21,5 +22,6 @@ export class TwitchApi {
     this.subscriptions = new TwitchSubscriptionsClient(broadcaster_id);
     this.markers = new TwitchMarkersClient(broadcaster_id);
     this.clips = new TwitchClipsClient(broadcaster_id);
+    this.streams = new TwitchStreamsClient(broadcaster_id);
   }
 }

@@ -14,6 +14,59 @@ export type Database = {
   }
   public: {
     Tables: {
+      broadcaster_live_status: {
+        Row: {
+          broadcaster_id: string
+          broadcaster_name: string
+          category_id: string | null
+          category_name: string | null
+          created_at: string
+          id: string
+          is_live: boolean
+          stream_ended_at: string | null
+          stream_id: string | null
+          stream_started_at: string | null
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          broadcaster_id: string
+          broadcaster_name: string
+          category_id?: string | null
+          category_name?: string | null
+          created_at?: string
+          id?: string
+          is_live?: boolean
+          stream_ended_at?: string | null
+          stream_id?: string | null
+          stream_started_at?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          broadcaster_id?: string
+          broadcaster_name?: string
+          category_id?: string | null
+          category_name?: string | null
+          created_at?: string
+          id?: string
+          is_live?: boolean
+          stream_ended_at?: string | null
+          stream_id?: string | null
+          stream_started_at?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "broadcaster_live_status_broadcaster_id_fkey"
+            columns: ["broadcaster_id"]
+            isOneToOne: true
+            referencedRelation: "integrations_twitch"
+            referencedColumns: ["twitch_user_id"]
+          },
+        ]
+      }
       clip_folder_junction: {
         Row: {
           clip_id: string
@@ -365,6 +418,130 @@ export type Database = {
           },
         ]
       }
+      smp_actions: {
+        Row: {
+          action: string
+          created_at: string
+          description: string | null
+          id: string
+          metadata: Json | null
+          name: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          name: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          name?: string
+        }
+        Relationships: []
+      }
+      smp_channelpoints_templates: {
+        Row: {
+          action: string | null
+          background_color: string | null
+          cost: number
+          created_at: string
+          global_cooldown_seconds: number | null
+          id: string
+          is_enabled: boolean | null
+          is_global_cooldown_enabled: boolean | null
+          is_max_per_stream_enabled: boolean | null
+          is_max_per_user_per_stream_enabled: boolean | null
+          is_user_input_required: boolean | null
+          max_per_stream: number | null
+          max_per_user_per_stream: number | null
+          prompt: string | null
+          should_redemptions_skip_request_queue: boolean | null
+          title: string
+        }
+        Insert: {
+          action?: string | null
+          background_color?: string | null
+          cost: number
+          created_at?: string
+          global_cooldown_seconds?: number | null
+          id?: string
+          is_enabled?: boolean | null
+          is_global_cooldown_enabled?: boolean | null
+          is_max_per_stream_enabled?: boolean | null
+          is_max_per_user_per_stream_enabled?: boolean | null
+          is_user_input_required?: boolean | null
+          max_per_stream?: number | null
+          max_per_user_per_stream?: number | null
+          prompt?: string | null
+          should_redemptions_skip_request_queue?: boolean | null
+          title: string
+        }
+        Update: {
+          action?: string | null
+          background_color?: string | null
+          cost?: number
+          created_at?: string
+          global_cooldown_seconds?: number | null
+          id?: string
+          is_enabled?: boolean | null
+          is_global_cooldown_enabled?: boolean | null
+          is_max_per_stream_enabled?: boolean | null
+          is_max_per_user_per_stream_enabled?: boolean | null
+          is_user_input_required?: boolean | null
+          max_per_stream?: number | null
+          max_per_user_per_stream?: number | null
+          prompt?: string | null
+          should_redemptions_skip_request_queue?: boolean | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "smp_channelpoints_templates_action_fkey"
+            columns: ["action"]
+            isOneToOne: false
+            referencedRelation: "smp_actions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      smp_triggers: {
+        Row: {
+          action_id: string | null
+          conditions: Json
+          created_at: string
+          event_type: string
+          id: string
+        }
+        Insert: {
+          action_id?: string | null
+          conditions?: Json
+          created_at?: string
+          event_type: string
+          id?: string
+        }
+        Update: {
+          action_id?: string | null
+          conditions?: Json
+          created_at?: string
+          event_type?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "smp_triggers_action_id_fkey"
+            columns: ["action_id"]
+            isOneToOne: false
+            referencedRelation: "smp_actions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       twitch_app_token: {
         Row: {
           access_token: string
@@ -449,6 +626,35 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       users: {
         Row: {
           avatar_url: string | null
@@ -487,6 +693,10 @@ export type Database = {
       add_clip_to_folder: {
         Args: { p_clip_id: string; p_folder_id: string }
         Returns: undefined
+      }
+      check_user_role: {
+        Args: { p_role: string; p_user_id: string }
+        Returns: boolean
       }
       get_all_clips_with_folders: {
         Args: never
