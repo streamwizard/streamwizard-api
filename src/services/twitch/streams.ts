@@ -36,8 +36,6 @@ export class TwitchStreamsClient extends TwitchApiBaseClient {
 
   async getStream({ type = "live" }: GetStreamOptions): Promise<Stream> {
 
-    console.log(this.broadcaster_id);
-
     const response = await this.clientApi().get(`/streams`, {
       params: {
         user_id: this.broadcaster_id,

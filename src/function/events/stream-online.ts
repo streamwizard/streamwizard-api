@@ -23,7 +23,7 @@ export const handleStreamOnline = async (
       broadcaster_id: event.broadcaster_user_id,
       broadcaster_name: event.broadcaster_user_name,
       is_live: true,
-      stream_started_at: event.started_at,
+      stream_started_at: stream.started_at,
       title: stream.title,
       stream_id: stream.id,
       category_id: stream.game_id,
